@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using NetMQ.zmq.Patterns.Utils;
+using NetMQ.zmq.Transports;
 using NetMQ.zmq.Utils;
 
 namespace NetMQ.zmq.Patterns
@@ -33,9 +34,9 @@ namespace NetMQ.zmq.Patterns
         public class RouterSession : SessionBase
         {
             public RouterSession(IOThread ioThread, bool connect,
-                                 SocketBase socket, Options options,
+                                 SocketBase socket, Options options, ITransport transport,
                                  Address addr)
-                : base(ioThread, connect, socket, options, addr)
+                : base(ioThread, connect, socket, options,transport, addr)
             {
 
             }

@@ -27,6 +27,8 @@ using System.Diagnostics;
 
 //Context object encapsulates all the global state associated with
 //  the library.
+using NetMQ.zmq.Transports;
+using NetMQ.zmq.Transports.Tcp;
 
 namespace NetMQ.zmq
 {
@@ -107,6 +109,8 @@ namespace NetMQ.zmq
         //  Synchronisation of access to context options.		
         private readonly object m_optSync;
 
+        private readonly Dictionary<string, ITransport> m_transports; 
+
         public const int TermTid = 0;
         public const int ReaperTid = 1;
 
@@ -131,6 +135,9 @@ namespace NetMQ.zmq
             m_ioThreads = new List<IOThread>();
             m_sockets = new List<SocketBase>();
             m_endpoints = new Dictionary<string, Endpoint>();
+            m_transports = new Dictionary<string, ITransport>();
+
+            m_transports.Add("tcp", new TcpTransport());
         }
 
         protected void Destroy()
@@ -252,6 +259,38 @@ namespace NetMQ.zmq
                 throw new InvalidException("option = " + option);
             }
         }
+
+        public void RegisterTransport(string protocol, ITransport transport)
+        {
+            protocol = protocol.ToLower();
+
+            lock (m_optSync)
+            {                
+                if (m_transports.ContainsKey(protocol))
+                {
+                    throw  new ArgumentException("protocol already registered");
+                }
+
+                m_transports.Add(protocol, transport);
+            }
+        }
+
+        internal ITransport GetTransport(string protocol)
+        {
+            protocol = protocol.ToLower();
+
+            lock (m_optSync)
+            {
+                ITransport transport;
+
+                if (!m_transports.TryGetValue(protocol, out transport))
+                {                                   
+                    throw new ProtocolNotSupportedException();
+                }
+
+                return transport;
+            }
+        }      
 
         public SocketBase CreateSocket(ZmqSocketType type)
         {

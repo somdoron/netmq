@@ -119,7 +119,7 @@ namespace NetMQ.zmq.Transports.PGM
 
                 IOThread ioThread = ChooseIOThread(m_options.Affinity);
 
-                SessionBase session = SessionBase.Create(ioThread, false, m_socket, m_options, new Address(m_handle.LocalEndPoint));
+                SessionBase session = SessionBase.Create(ioThread, false, m_socket, m_options, null, new Address(m_handle.LocalEndPoint));
 
                 session.IncSeqnum();
                 LaunchChild(session);

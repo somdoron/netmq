@@ -20,6 +20,7 @@
 */
 
 using System;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ.zmq.Patterns
 {
@@ -30,8 +31,8 @@ namespace NetMQ.zmq.Patterns
         {
 
             public PubSession(IOThread ioThread, bool connect,
-                              SocketBase socket, Options options, Address addr)
-                : base(ioThread, connect, socket, options, addr)
+                              SocketBase socket, Options options, ITransport transport, Address addr)
+                : base(ioThread, connect, socket, options,transport, addr)
             {
 
             }

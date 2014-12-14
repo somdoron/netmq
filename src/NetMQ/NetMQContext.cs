@@ -6,6 +6,7 @@ using System.Threading;
 using NetMQ.Sockets;
 using NetMQ.zmq;
 using NetMQ.Monitoring;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ
 {
@@ -253,6 +254,11 @@ namespace NetMQ
             }
 
             return new NetMQMonitor(CreatePairSocket(), endpoint);
+        }
+
+        public void RegisterTransport(string protocol, ITransport transport)
+        {
+            m_ctx.RegisterTransport(protocol, transport);
         }
 
         /// <summary>

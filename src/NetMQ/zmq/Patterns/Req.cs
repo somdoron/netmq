@@ -22,6 +22,7 @@
 
 using System;
 using System.Diagnostics;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ.zmq.Patterns
 {
@@ -170,9 +171,9 @@ namespace NetMQ.zmq.Patterns
             State m_state;
 
             public ReqSession(IOThread ioThread, bool connect,
-                                                SocketBase socket, Options options,
+                                                SocketBase socket, Options options,ITransport transport,
                                                 Address addr)
-                : base(ioThread, connect, socket, options, addr)
+                : base(ioThread, connect, socket, options,transport, addr)
             {
                 m_state = State.Identity;
             }

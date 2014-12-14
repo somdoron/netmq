@@ -47,6 +47,8 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="zmq\Transports\ConnecterBase.cs" />
+    <Compile Include="zmq\Transports\ITransport.cs" />
     <Compile Include="NetMQActor.cs" />
     <Compile Include="EventDelegator.cs" />
     <Compile Include="InProcActors\Actor.cs" />
@@ -117,6 +119,9 @@
     <Compile Include="Sockets\XSubscriberSocket.cs" />
     <Compile Include="NetMQTimer.cs" />
     <Compile Include="zmq\Address.cs" />
+    <Compile Include="zmq\Transports\ITransportAddress.cs" />
+    <Compile Include="zmq\Transports\ListenerBase.cs" />
+    <Compile Include="zmq\Transports\Tcp\TcpTransport.cs" />
     <Compile Include="zmq\Utils\AtomicCounter.cs" />
     <Compile Include="Blob.cs" />
     <Compile Include="BufferPool.cs" />

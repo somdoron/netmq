@@ -137,6 +137,7 @@
     <Compile Include="zmq\SessionBase.cs" />
     <Compile Include="zmq\SocketBase.cs" />
     <Compile Include="zmq\Transports\ByteArraySegment.cs" />
+    <Compile Include="zmq\Transports\ConnecterBase.cs" />
     <Compile Include="zmq\Transports\DecoderBase.cs" />
     <Compile Include="zmq\Transports\EncoderBase.cs" />
     <Compile Include="zmq\Transports\IDecoder.cs" />
@@ -145,6 +146,9 @@
     <Compile Include="zmq\Transports\Ipc\IpcAddress.cs" />
     <Compile Include="zmq\Transports\Ipc\IpcConnecter.cs" />
     <Compile Include="zmq\Transports\Ipc\IpcListener.cs" />
+    <Compile Include="zmq\Transports\ITransport.cs" />
+    <Compile Include="zmq\Transports\ITransportAddress.cs" />
+    <Compile Include="zmq\Transports\ListenerBase.cs" />
     <Compile Include="zmq\Transports\Pgm\PgmAddress.cs" />
     <Compile Include="zmq\Transports\Pgm\PgmListener.cs" />
     <Compile Include="zmq\Transports\Pgm\PgmSender.cs" />
@@ -156,6 +160,7 @@
     <Compile Include="zmq\Transports\Tcp\TcpAddress.cs" />
     <Compile Include="zmq\Transports\Tcp\TcpConnecter.cs" />
     <Compile Include="zmq\Transports\Tcp\TcpListener.cs" />
+    <Compile Include="zmq\Transports\Tcp\TcpTransport.cs" />
     <Compile Include="zmq\Transports\V1Decoder.cs" />
     <Compile Include="zmq\Transports\V1Encoder.cs" />
     <Compile Include="zmq\Transports\V2Decoder.cs" />

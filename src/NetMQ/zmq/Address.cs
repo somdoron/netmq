@@ -20,6 +20,7 @@
 
 using System;
 using System.Net;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ.zmq
 {
@@ -30,14 +31,7 @@ namespace NetMQ.zmq
         public const string IpcProtocol = "ipc";
         public const string PgmProtocol = "pgm";
         public const string EpgmProtocol = "epgm";
-
-        public interface IZAddress
-        {
-            void Resolve(String name, bool ip4Only);
-            IPEndPoint Address { get; }
-            String Protocol { get; }
-        };
-
+       
 
         public Address(String protocol, String address)
         {
@@ -103,6 +97,6 @@ namespace NetMQ.zmq
 
         public String AddressString { get; private set; }
 
-        public IZAddress Resolved { get; set; }
+        public ITransportAddress Resolved { get; set; }
     }
 }

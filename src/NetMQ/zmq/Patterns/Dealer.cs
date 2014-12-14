@@ -22,6 +22,7 @@
 using System;
 using System.Diagnostics;
 using NetMQ.zmq.Patterns.Utils;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ.zmq.Patterns
 {
@@ -31,9 +32,9 @@ namespace NetMQ.zmq.Patterns
         public class DealerSession : SessionBase
         {
             public DealerSession(IOThread ioThread, bool connect,
-                                                     SocketBase socket, Options options,
+                                                     SocketBase socket, Options options, ITransport transport,
                                                      Address addr)
-                : base(ioThread, connect, socket, options, addr)
+                : base(ioThread, connect, socket, options, transport, addr)
             {
 
             }

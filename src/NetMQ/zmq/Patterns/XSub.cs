@@ -22,6 +22,7 @@
 using System.Configuration;
 using System.Diagnostics;
 using NetMQ.zmq.Patterns.Utils;
+using NetMQ.zmq.Transports;
 
 namespace NetMQ.zmq.Patterns
 {
@@ -31,8 +32,8 @@ namespace NetMQ.zmq.Patterns
         {
 
             public XSubSession(IOThread ioThread, bool connect,
-                               SocketBase socket, Options options, Address addr) :
-                base(ioThread, connect, socket, options, addr)
+                               SocketBase socket, Options options, ITransport transport, Address addr) :
+                base(ioThread, connect, socket, options, transport, addr)
             {
             }
 

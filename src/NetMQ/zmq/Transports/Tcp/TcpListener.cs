@@ -29,7 +29,7 @@ using AsyncIO;
 
 namespace NetMQ.zmq.Transports.Tcp
 {
-    public class TcpListener : Own, IProcatorEvents
+    public class TcpListener : ListenerBase, IProcatorEvents
     {
         private const SocketOptionName IPv6Only = (SocketOptionName) 27;
 
@@ -168,7 +168,7 @@ namespace NetMQ.zmq.Transports.Tcp
 
                 //  Create and launch a session object. 
                 // TODO: send null in address parameter, is unneed in this case
-                SessionBase session = SessionBase.Create(ioThread, false, m_socket, m_options, new Address(m_handle.LocalEndPoint));
+                SessionBase session = SessionBase.Create(ioThread, false, m_socket, m_options,null,  new Address(m_handle.LocalEndPoint));
                 session.IncSeqnum();
                 LaunchChild(session);
 
@@ -208,12 +208,12 @@ namespace NetMQ.zmq.Transports.Tcp
             m_handle = null;
         }
 
-        public virtual String Address
+        public override String Address
         {
             get { return m_address.ToString(); }
         }        
 
-        public virtual int Port
+        public override int Port
         {
             get { return m_port; }
         }

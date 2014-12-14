@@ -29,11 +29,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using AsyncIO;
 using NetMQ.zmq.Patterns;
+using NetMQ.zmq.Transports;
 using NetMQ.zmq.Transports.PGM;
-using NetMQ.zmq.Transports.Tcp;
 using NetMQ.zmq.Transports.Ipc;
 using NetMQ.zmq.Utils;
-using TcpListener = NetMQ.zmq.Transports.Tcp.TcpListener;
 
 namespace NetMQ.zmq
 {
@@ -109,7 +108,7 @@ namespace NetMQ.zmq
 
         /// <summary>
         /// Throw exception if socket is disposed
-       /// </summary>  
+        /// </summary>  
         public void CheckDisposed()
         {
             if (m_disposed)
@@ -128,7 +127,7 @@ namespace NetMQ.zmq
         }
 
         //  Create a socket of a specified type.
-        public static SocketBase Create(ZmqSocketType type, Ctx parent,int threadId, int socketId)
+        public static SocketBase Create(ZmqSocketType type, Ctx parent, int threadId, int socketId)
         {
             SocketBase socketBase;
             switch (type)
@@ -211,7 +210,14 @@ namespace NetMQ.zmq
                 !protocol.Equals(Address.IpcProtocol) && !protocol.Equals(Address.TcpProtocol) &&
                 !protocol.Equals(Address.PgmProtocol) && !protocol.Equals(Address.EpgmProtocol))
             {
-                throw new ProtocolNotSupportedException();
+                ITransport transport = Ctx.GetTransport(protocol);
+
+                if (!transport.IsSocketTypeSupported(m_options.SocketType))
+                {
+                    throw new ProtocolNotSupportedException(protocol + ",type=" + m_options.SocketType);
+                }
+
+                return;
             }
 
             //  Check whether socket type and transport protocol match.
@@ -221,7 +227,7 @@ namespace NetMQ.zmq
                             m_options.SocketType != ZmqSocketType.Pub && m_options.SocketType != ZmqSocketType.Sub &&
                             m_options.SocketType != ZmqSocketType.Xpub && m_options.SocketType != ZmqSocketType.Xsub)
             {
-                throw new ProtocolNotSupportedException(protocol + ",type=" + m_options.SocketType);                
+                throw new ProtocolNotSupportedException(protocol + ",type=" + m_options.SocketType);
             }
 
             //  Protocol is available.
@@ -282,7 +288,7 @@ namespace NetMQ.zmq
                 }
                 catch (TerminatingException)
                 {
-                    return -1;                    
+                    return -1;
                 }
 
                 PollEvents val = 0;
@@ -318,7 +324,7 @@ namespace NetMQ.zmq
                 }
                 catch (TerminatingException)
                 {
-                    return -1;                    
+                    return -1;
                 }
 
                 PollEvents val = 0;
@@ -381,32 +387,6 @@ namespace NetMQ.zmq
                 throw NetMQException.Create(ErrorCode.EmptyThread);
             }
 
-            if (protocol.Equals(Address.TcpProtocol))
-            {
-                TcpListener listener = new TcpListener(
-                        ioThread, this, m_options);
-
-                try
-                {
-                    listener.SetAddress(address);
-                    m_port = listener.Port;
-                }
-                catch (NetMQException ex)
-                {
-                    listener.Destroy();
-                    EventBindFailed(addr, ex.ErrorCode);
-
-                    throw;
-                }
-
-                // Save last endpoint URI
-                m_options.LastEndpoint = listener.Address;
-
-                AddEndpoint(addr, listener);
-
-                return;
-            }
-
             if (protocol.Equals(Address.PgmProtocol) || protocol.Equals(Address.EpgmProtocol))
             {
                 PgmListener listener = new PgmListener(ioThread, this, m_options);
@@ -426,11 +406,8 @@ namespace NetMQ.zmq
                 m_options.LastEndpoint = addr;
 
                 AddEndpoint(addr, listener);
-
-                return;
             }
-
-            if (protocol.Equals(Address.IpcProtocol))
+            else if (protocol.Equals(Address.IpcProtocol))
             {
                 IpcListener listener = new IpcListener(
                         ioThread, this, m_options);
@@ -451,12 +428,29 @@ namespace NetMQ.zmq
                 // Save last endpoint URI
                 m_options.LastEndpoint = listener.Address;
 
-                AddEndpoint(addr, listener);
-                return;
+                AddEndpoint(addr, listener);                
             }
+            else
+            {
+                ITransport transport = Ctx.GetTransport("tcp");
 
-            Debug.Assert(false);
-            throw new FaultException();
+                ListenerBase listener ;
+                
+                try
+                {
+                    listener = transport.CreateListener(ioThread, this, address, m_options);
+                    m_port = listener.Port;
+                }
+                catch (NetMQException ex)
+                {                    
+                    EventBindFailed(addr, ex.ErrorCode);
+                    throw;
+                }                               
+
+                // Save last endpoint URI
+                m_options.LastEndpoint = listener.Address;
+                AddEndpoint(addr, listener);                
+            }
         }
 
         public int BindRandomPort(String addr)
@@ -567,14 +561,10 @@ namespace NetMQ.zmq
             }
             Address paddr = new Address(protocol, address);
 
-            //  Resolve address (if needed by the protocol)
-            if (protocol.Equals(Address.TcpProtocol))
-            {
-                paddr.Resolved = (new TcpAddress());
-                paddr.Resolved.Resolve(
-                        address, m_options.IPv4Only);
-            }
-            else if (protocol.Equals(Address.IpcProtocol))
+            ITransport transport = null;
+
+            //  Resolve address (if needed by the protocol)          
+            if (protocol.Equals(Address.IpcProtocol))
             {
                 paddr.Resolved = (new IpcAddress());
                 paddr.Resolved.Resolve(address, true);
@@ -590,9 +580,14 @@ namespace NetMQ.zmq
                 paddr.Resolved = new PgmAddress();
                 paddr.Resolved.Resolve(address, m_options.IPv4Only);
             }
+            else
+            {
+                transport = Ctx.GetTransport(protocol);
+                paddr.Resolved = transport.Resolve(address, m_options.IPv4Only);
+            }
 
             //  Create session.
-            SessionBase session = SessionBase.Create(ioThread, true, this, m_options, paddr);
+            SessionBase session = SessionBase.Create(ioThread, true, this, m_options,transport, paddr);
             Debug.Assert(session != null);
 
             //  PGM does not support subscription forwarding; ask for all data to be

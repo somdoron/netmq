@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NetMQ.zmq.Transports.PGM
 {
-    public class PgmAddress : Address.IZAddress
+    public class PgmAddress : ITransportAddress
     {
         private string m_network;
 

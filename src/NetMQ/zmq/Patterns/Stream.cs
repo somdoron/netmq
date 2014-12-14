@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using NetMQ.zmq.Patterns.Utils;
+using NetMQ.zmq.Transports;
 using NetMQ.zmq.Utils;
 
 namespace NetMQ.zmq.Patterns
@@ -35,9 +36,9 @@ namespace NetMQ.zmq.Patterns
         public class StreamSession : SessionBase
         {
             public StreamSession(IOThread ioThread, bool connect,
-                                 SocketBase socket, Options options,
+                                 SocketBase socket, Options options, ITransport transport,
                                  Address addr)
-                : base(ioThread, connect, socket, options, addr)
+                : base(ioThread, connect, socket, options, transport, addr)
             {
 
             }
