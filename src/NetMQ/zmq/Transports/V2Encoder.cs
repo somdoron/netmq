@@ -78,6 +78,12 @@ namespace NetMQ.zmq.Transports
                 return false;
             }
 
+            // Help to try and find the issue of message being already closed, maybe it was already closed when fetched?
+            if (!m_inProgress.Check())
+            {
+                throw new FaultException();
+            }
+
             int protocolFlags = 0;
             if (m_inProgress.HasMore)
                 protocolFlags |= V2Protocol.MoreFlag;

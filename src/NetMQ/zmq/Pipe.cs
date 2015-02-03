@@ -247,6 +247,12 @@ namespace NetMQ.zmq
         /// <returns>Returns <c>false</c> if the message cannot be written because high watermark was reached.</returns>
         public bool Write(ref Msg msg)
         {
+            // for debug propuse, check if the message came already closed            
+            if (!msg.Check())
+            {
+                throw new FaultException();
+            }
+
             if (!CheckWrite())
                 return false;
 
