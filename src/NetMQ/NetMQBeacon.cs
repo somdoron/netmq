@@ -313,7 +313,7 @@ namespace NetMQ
 
                 try
                 {
-#if NETSTANDARD1_3 || UAP
+#if NETSTANDARD1_3 || UAP || NETCOREAPP2_0
                     return m_hostName = Dns.GetHostEntryAsync(boundTo).Result.HostName;
 #else
                     return m_hostName = Dns.GetHostEntry(boundTo).HostName;

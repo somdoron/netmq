@@ -38,7 +38,7 @@ namespace NetMQ.Tests
         [Fact]
         public void ExceptionWhenSendingToPeerWhichDoesnExist()
         {
-            using (var peer1 = new PeerSocket("@inproc://peer"))
+            using (var peer1 = new PeerSocket("@inproc://peer2"))
             {
                 Assert.Throws<HostUnreachableException>(() =>
                 {
@@ -52,8 +52,8 @@ namespace NetMQ.Tests
         [Fact]
         public void DropMultipartMessages()
         {
-            using (var peer1 = new PeerSocket("@inproc://peer"))
-            using (var dealer = new DealerSocket(">inproc://peer"))
+            using (var peer1 = new PeerSocket("@inproc://peer3"))
+            using (var dealer = new DealerSocket(">inproc://peer3"))
             {
                 dealer.SendMoreFrame("This should be dropped");
                 dealer.SendFrame("This as well");

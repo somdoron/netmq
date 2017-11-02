@@ -20,7 +20,7 @@ namespace NetMQ.Core
 
         static MonitorEvent()
         {
-#if NETSTANDARD1_3 || UAP
+#if NETSTANDARD1_3 || UAP || NETCOREAPP2_0
             s_sizeOfIntPtr = Marshal.SizeOf<IntPtr>();
 #else
             s_sizeOfIntPtr = Marshal.SizeOf(typeof(IntPtr));
