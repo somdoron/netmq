@@ -1,0 +1,24 @@
+name: prerelease
+#on: [push, pull_request]
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+ windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      shell: bash
+    - run: echo ${{ steps.get_version.outputs.VERSION }}
+    - run: dotnet pack src/NetMQ/NetMQ.csproj -o . -c Release /p:PackageVersion="${{ steps.get_version.outputs.VERSION }}-pre" /p:Version=${{ steps.get_version.outputs.VERSION }}
+#    - uses: nuget/setup-nuget@v1
+#      with:
+#        nuget-api-key: ${{ secrets.NuGetAPIKey }}    
+    - run: nuget push *.nupkg
+
+          
+
