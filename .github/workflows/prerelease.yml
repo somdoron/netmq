@@ -1,0 +1,16 @@
+name: release
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+ windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: dotnet restore src/NetMQ.sln
+    - name: pack
+      run: dotnet pack src/NetMQ/NetMQ.csproj -c Release /p:PackageVersion=%GITHUB_REF%-pre /p:Version=%GITHUB_REF%
+
+          
+
