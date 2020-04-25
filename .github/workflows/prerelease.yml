@@ -1,0 +1,19 @@
+name: prerelease
+#on: [push, pull_request]
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+ windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: dotnet restore src/NetMQ.sln
+    - run: echo ${{ github.ref }}
+    - name: pack
+      run: dotnet pack src/NetMQ/NetMQ.csproj -c Release /p:PackageVersion="${{ github.ref }}-pre" /p:Version=${{ github.ref }}
+    
+
+          
+
